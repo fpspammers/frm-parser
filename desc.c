@@ -8,7 +8,7 @@ int main(){
   FILE *fptr;
   int i;
 
-  fptr=fopen("/var/lib/mysql/Student/stud_details.frm","rb");
+  fptr=fopen("faculty.frm","rb");
 
   if(fptr==NULL){
     printf("Error opening file");
@@ -18,8 +18,6 @@ int main(){
     set_field_count(fptr);
     struct field field_info[field_count];
     struct field *dets_ptr=field_info;
-    field_names(fptr,dets_ptr);
-    field_data_types(fptr,dets_ptr);
-    describe_table(dets_ptr);
+    describe_table(dets_ptr,fptr);
     }
   }
