@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
 #include "desclib.h"
 
 int field_count;
+char table_name[256];
 
 //Extracts the field names from the appropriate offsets and stores each one in the array of structures
 
@@ -154,4 +156,68 @@ void describe_table(struct field *dets_ptr,FILE *f_ptr){
 void set_field_count(FILE *f_ptr){
   fseek(f_ptr,0x2102,SEEK_SET);
   field_count=fgetc(f_ptr);
+}
+
+//Displays all the tables in the Database.
+
+void show_tables(){
+	char file_name[256], db_name[256], path_var[256], *ptr;
+	int i;
+	strcpy(path_var,"/var/lib/mysql/");
+	printf("\nEnter Database Name\n");
+	scanf("%s",db_name);
+	strcat(path_var,db_name); // setting the appropriate path according to user's selection
+
+	struct dirent *de; // Pointer for directory entry
+
+	// opendir() returns a pointer of DIR type.
+	DIR *dr = opendir(path_var);
+
+	if (dr == NULL) // opendir returns NULL if couldn't open directory
+	{
+		printf("Could not open current directory\n" );
+	}
+
+  else{
+    printf("+---------------------+\n| %-20s|\n+---------------------+\n","Tables");
+    while ((de = readdir(dr)) != NULL){
+
+      if(de->d_type==DT_REG){ //DT_REG is a constant for to represent files.
+  			strcpy(file_name,de->d_name);
+  			ptr=strrchr(file_name,'.'); // looking for thr last ocurence of '.'
+  			ptr++;
+
+        if(*ptr=='f'){
+  				for(i=0;file_name[i]!='.';i++){
+            table_name[i]=file_name[i];
+          }
+          table_name[i]='\0';
+          printf("| %-20s|\n",table_name);
+  			}
+  		}
+  	}
+    printf("+---------------------+\n");
+  	closedir(dr);
+  }
+}
+
+//Displays all the databases on the system.
+
+void show_db(){
+	struct dirent *de; // Pointer for directory entry
+
+	// opendir() returns a pointer of DIR type.
+	DIR *dr = opendir("/var/lib/mysql");
+
+	if (dr == NULL){ // opendir returns NULL if couldn't open directory
+		printf("Could not open current directory" );
+	}
+
+  printf("+---------------------+\n| %-20s|\n+---------------------+\n","Databases");
+	while ((de = readdir(dr)) != NULL){
+			if(de->d_type==DT_DIR)//can also compare with the numeric constant 4
+			   printf("| %-20s|\n",de->d_name);
+	}
+  printf("+---------------------+\n");
+	closedir(dr);
 }

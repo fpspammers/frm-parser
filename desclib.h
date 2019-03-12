@@ -13,4 +13,6 @@ void field_sizes(FILE *f_ptr, struct field *dets_ptr);
 FILE *set_to_data_types(FILE *fptr);
 void describe_table(struct field *dets_ptr,FILE *fptr);
 void set_field_count(FILE *f_ptr);
+void show_db();
+void show_tables();
 #endif
