@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-#include <dirent.h>
 #include "desclib.h"
-
-int field_count;
 
 int main(){
   FILE *fptr;
@@ -23,8 +18,8 @@ int main(){
     while(flag){
       printf("\nType a number for the command you want to perform:\n");
       printf("\n-> For describe tables type '1'\n");
-      printf("-> For show tables type '2'\n");
-      printf("-> For show databses type '3'\n");
+      printf("-> For show tables command, type '2'\n");
+      printf("-> For show databses command, type '3'\n");
       printf("-> To quit type '4'\n\n");
       scanf("%d",&option);
 

@@ -1,15 +1,11 @@
-#include <stdio.h>
-#include <string.h>
-#include <dirent.h>
 #include "desclib.h"
 
-int field_count;
 char table_name[256];
 
 //Extracts the field names from the appropriate offsets and stores each one in the array of structures
 
 void field_names(FILE *f_ptr,struct field *dets_ptr){
-  FILE *set_ptr=set_to_data_types(f_ptr); //Sets pointer to point to the start of the section of the file that stores the data types.
+  fseek(f_ptr,0x2150,SEEK_SET); //Sets pointer to point to the start of the section of the file that stores the data types.
 
   while(fgetc(f_ptr)!=0xff){ //Moves the pointer ahead until it doesnt encounter a byte containing the value ff or 255.
     continue;
@@ -60,6 +56,7 @@ FILE *set_to_data_types(FILE *f_ptr){
       }
       else{
         zero_count_post=0;
+        zero_count_pre=0;
         marker_flag=0;
       }
     }
@@ -81,7 +78,7 @@ void field_data_types(FILE *f_ptr,struct field *dets_ptr){
   int ch,field_no=0;
 
   while(field_no<field_count){
-    ch=fgetc(f_ptr);
+    ch=fgetc(set_ptr);
 
     switch(ch){ //Switch-Case checks the value of the byte and stores the data type that corresponds to it.
       case 3:
