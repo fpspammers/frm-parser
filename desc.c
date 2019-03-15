@@ -2,7 +2,7 @@
 
 int main(){
   FILE *fptr;
-  int option,flag=1;
+  us_int option,flag=1;
 
   fptr=fopen("faculty.frm","rb");
 
@@ -18,10 +18,10 @@ int main(){
     while(flag){
       printf("\nType a number for the command you want to perform:\n");
       printf("\n-> For describe tables type '1'\n");
-      printf("-> For show tables command, type '2'\n");
-      printf("-> For show databses command, type '3'\n");
+      printf("-> For show tables type '2'\n");
+      printf("-> For show databses type '3'\n");
       printf("-> To quit type '4'\n\n");
-      scanf("%d",&option);
+      scanf("%hu",&option);
 
       switch(option){
         case 1:

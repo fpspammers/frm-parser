@@ -4,14 +4,14 @@ char table_name[256];
 
 //Extracts the field names from the appropriate offsets and stores each one in the array of structures
 
-void field_names(FILE *f_ptr,struct field *dets_ptr){
+us_int field_names(FILE *f_ptr,struct field *dets_ptr){
   fseek(f_ptr,0x2150,SEEK_SET); //Sets pointer to point to the start of the section of the file that stores the data types.
 
   while(fgetc(f_ptr)!=0xff){ //Moves the pointer ahead until it doesnt encounter a byte containing the value ff or 255.
     continue;
   }
 
-  int ch,i=0,field_no=0;
+  us_int ch,i=0,field_no=0;
 
   while(field_no<field_count){
     ch=fgetc(f_ptr);
@@ -28,13 +28,14 @@ void field_names(FILE *f_ptr,struct field *dets_ptr){
       i++;
     }
   }
+  return field_no;
 }
 
 //Dynamically sets the file pointer to point to the offset in the file from where the data types can begin to be read
 
 FILE *set_to_data_types(FILE *f_ptr){
   fseek(f_ptr,0x2150,SEEK_SET); //seeks to a neutral offset close to the target offset.
-  int zero_count_pre=0,zero_count_post=0,marker_flag=0,ch;
+  us_int zero_count_pre=0,zero_count_post=0,marker_flag=0,ch;
 
   while(1){
     ch=fgetc(f_ptr);
@@ -70,12 +71,12 @@ FILE *set_to_data_types(FILE *f_ptr){
 
 //Extracts the byte that corresponds to the data-type of the field, compares it to expected values and stores the data type as a string in the array of structures.
 
-void field_data_types(FILE *f_ptr,struct field *dets_ptr){
+us_int field_data_types(FILE *f_ptr,struct field *dets_ptr){
 
   FILE *set_ptr=set_to_data_types(f_ptr);
   fseek(set_ptr,5,SEEK_CUR);  //Sets the pointer to the offset where it can start reading the data types
 
-  int ch,field_no=0;
+  us_int ch,field_no=0;
 
   while(field_no<field_count){
     ch=fgetc(set_ptr);
@@ -114,14 +115,15 @@ void field_data_types(FILE *f_ptr,struct field *dets_ptr){
     dets_ptr++;
     field_no++;
   }
+  return field_no;
 }
 
 //Extracts the size in bytes of each field and stores it in the array of structures.
 
-void field_sizes(FILE *f_ptr, struct field *dets_ptr){
+us_int field_sizes(FILE *f_ptr, struct field *dets_ptr){
   FILE *set_ptr=set_to_data_types(f_ptr);
   fseek(set_ptr,-6,SEEK_CUR);
-  int field_no=0;
+  us_int field_no=0;
 
   while(field_no<field_count){
     dets_ptr->size=fgetc(f_ptr);
@@ -129,12 +131,13 @@ void field_sizes(FILE *f_ptr, struct field *dets_ptr){
     dets_ptr++;
     field_no++;
   }
+  return field_no;
 }
 
 //Prints all of the values from the array of strutures in a formatted manner.
 
-void describe_table(struct field *dets_ptr,FILE *f_ptr){
-  int i;
+us_int describe_table(struct field *dets_ptr,FILE *f_ptr){
+  us_int i;
   field_names(f_ptr,dets_ptr);
   field_data_types(f_ptr,dets_ptr);
   field_sizes(f_ptr,dets_ptr);
@@ -142,10 +145,11 @@ void describe_table(struct field *dets_ptr,FILE *f_ptr){
   printf("| %-20s| %-20s| %-5s|\n","field","data type","size");
   printf("+---------------------+---------------------+------+\n");
   for(i=0;i<field_count;i++){
-    printf("| %-20s| %-20s| %-5d|\n",dets_ptr->name,dets_ptr->type,dets_ptr->size);
+    printf("| %-20s| %-20s| %-5hu|\n",dets_ptr->name,dets_ptr->type,dets_ptr->size);
     dets_ptr++;
   }
   printf("+---------------------+---------------------+------+\n");
+  return 0;
 }
 
 //Reads the byte containing the number of fields in the table and stores it in the field_count variable.
@@ -159,7 +163,7 @@ void set_field_count(FILE *f_ptr){
 
 void show_tables(){
 	char file_name[256], db_name[256], path_var[256], *ptr;
-	int i;
+	us_int i;
 	strcpy(path_var,"/var/lib/mysql/");
 	printf("\nEnter Database Name\n");
 	scanf("%s",db_name);
